@@ -1,0 +1,71 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+import time
+
+# Configuração do WebDriver (assumindo que o chromedriver está no PATH)
+driver = webdriver.Chrome()
+
+try:
+    # 1. Acessar o endereço
+    driver.get("https://reservas.desbravador.com.br/1111")
+
+    # Esperar até que os elementos da página sejam carregados
+    wait = WebDriverWait(driver, 10)
+
+    # 2. Verificar a disponibilidade de reserva para no mínimo 03 dias
+    # Localizar e preencher as datas de check-in e check-out
+    check_in = wait.until(EC.presence_of_element_located((By.ID, "check_in_date")))
+    check_out = driver.find_element(By.ID, "check_out_date")
+    check_in.clear()
+    check_in.send_keys("26/08/2024")
+    check_out.clear()
+    check_out.send_keys("30/08/2024")
+    check_out.send_keys(Keys.RETURN)
+
+    # 3. Selecionar o quarto STANDARD ST1
+    # Supondo que existe um menu de seleção para o tipo de quarto
+    room_select = wait.until(EC.presence_of_element_located((By.ID, "room_type")))
+    room_select.send_keys("STANDARD ST1")
+
+    # 4. Adicionar na reserva 02 Adultos e 01 criança até 05 anos
+    # Preenchendo os campos para o número de adultos e crianças
+    adults = driver.find_element(By.ID, "adults")
+    children = driver.find_element(By.ID, "children")
+    adults.clear()
+    adults.send_keys("2")
+    children.clear()
+    children.send_keys("1")
+
+    # 5. Informar os hóspedes da reserva
+    # Preencher as informações dos hóspedes (nomes fictícios para exemplo)
+    guest_name = driver.find_element(By.ID, "guest_name")
+    child_name = driver.find_element(By.ID, "child_name")
+    guest_name.send_keys("John Doe")
+    child_name.send_keys("Jane Doe")
+
+    # 6. Efetuar pagamento com cartão de crédito
+    # Inserir informações de pagamento (dados fictícios)
+    card_number = driver.find_element(By.ID, "card_number")
+    card_name = driver.find_element(By.ID, "card_name")
+    card_expiry = driver.find_element(By.ID, "card_expiry")
+    card_cvc = driver.find_element(By.ID, "card_cvc")
+
+    card_number.send_keys("4000000000000044")
+    card_name.send_keys("DESBRAVADOR SOFTWARE")
+    card_expiry.send_keys("12/23")
+    card_cvc.send_keys("123")
+
+    # Submeter a reserva (supondo que há um botão para confirmar)
+    submit_button = driver.find_element(By.ID, "submit_button")
+    submit_button.click()
+
+    # Aguardar confirmação da reserva (ajustar conforme a lógica do site)
+    confirmation = wait.until(EC.presence_of_element_located((By.ID, "confirmation_message")))
+    print(confirmation.text)
+
+finally:
+    # Fechar o navegador
+    driver.quit()
